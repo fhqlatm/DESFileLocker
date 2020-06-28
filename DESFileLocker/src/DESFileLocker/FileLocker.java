@@ -6,10 +6,6 @@ import javax.swing.*;
 import javax.swing.border.EtchedBorder;
 
 import com.thehowtotutorial.splashscreen.JSplash;
-
-import javafx.scene.layout.Border;
-
-import java.net.MalformedURLException;
 import java.net.URL;
 
 import java.io.*;
@@ -43,7 +39,7 @@ public class FileLocker extends JFrame {
 		createMenu();
 		createMainWindow();
 
-	} // FileLocker
+	} // FileLocker	
 
 	public void createMainWindow() {
 		
