@@ -20,7 +20,7 @@ import javax.crypto.spec.DESKeySpec;
 
 public class FileLocker extends JFrame {
 
-	static String keyValue = "password"; //패스워드 8자리 이하 필수!!
+	static String keyValue = "password"; //패스워드 8자리 필수!!
 
 	JFrame frame; // 프레임 생성
 	JTextArea textArea; // 텍스트 영역
@@ -46,12 +46,15 @@ public class FileLocker extends JFrame {
 		
 		JPanel panel = new JPanel();
 		JLabel titleLabel = new JLabel();
-		EtchedBorder eBorder = new EtchedBorder(EtchedBorder.RAISED);
+		EtchedBorder eBorder = new EtchedBorder(EtchedBorder.RAISED);		//EtchedBorder로 텍스트 필드 디자인 추가
 		
 		titleLabel.setBorder(eBorder);
 		titleLabel.setText("TEXT Field");
 		titleLabel.setHorizontalAlignment(JLabel.CENTER);
-		titleLabel.setFont(new Font("SansSerif",Font.BOLD, 17));
+		titleLabel.setOpaque(true);										//background 활성화
+		titleLabel.setBackground(Color.darkGray);						//배경 색상
+		titleLabel.setForeground(Color.WHITE);							//폰트 색상
+		titleLabel.setFont(new Font("SansSerif",Font.BOLD, 17));		//setFont로 텍스트 필드 디자인 추가
 		
 		textArea.setBorder(eBorder);
 		textArea.setFont(new Font("",Font.BOLD, 17));
