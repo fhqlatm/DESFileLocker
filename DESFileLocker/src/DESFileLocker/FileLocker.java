@@ -20,7 +20,7 @@ import javax.crypto.spec.DESKeySpec;
 
 public class FileLocker extends JFrame {
 
-	static String keyValue = "1111111111222222222233333333333"; // 암호로 제시될 24byte 키값
+	static String keyValue = "password"; //패스워드 8자리 이하 필수!!
 
 	JFrame frame; // 프레임 생성
 	JTextArea textArea; // 텍스트 영역
@@ -33,12 +33,11 @@ public class FileLocker extends JFrame {
 	BufferedWriter bw; // 파일 쓰는 것을 효율적으로 높이기 위함
 
 	// FileLcoker 생성자
-	FileLocker() throws InterruptedException {
+	FileLocker() throws Exception {
 
 		loadMainImage();
 		createMenu();
 		createMainWindow();
-
 	} // FileLocker	
 
 	public void createMainWindow() {
@@ -195,9 +194,7 @@ public class FileLocker extends JFrame {
 		FileDialog fileOpen = new FileDialog(frame, "파일열기", FileDialog.LOAD);
 		fileOpen.setLocationRelativeTo(null);
 		fileOpen.setVisible(true); // 파일입출력 다이얼로그 생성
-		fileName = fileOpen.getDirectory() + fileOpen.getFile(); // 파일 경로 와 파일
-																	// 이름 및 확장자
-																	// 대입
+		fileName = fileOpen.getDirectory() + fileOpen.getFile(); // 파일경로와 파일이름 및 확장자 대입
 		System.out.println(fileName);
 
 		// 파일입출력을 위해 강제적 예외 처리
@@ -227,13 +224,9 @@ public class FileLocker extends JFrame {
 	public void saveFile() {
 
 		// 파일을 저장하는 객체 생성
-		FileDialog fileSave = new FileDialog(frame, "파일저장", FileDialog.SAVE); // 파일입출력
-																				// 다이얼로그
-																				// 생성
+		FileDialog fileSave = new FileDialog(frame, "파일저장", FileDialog.SAVE); // 파일입출력 다이얼로그 생성
 		fileSave.setVisible(true);
-		fileName = fileSave.getDirectory() + fileSave.getFile(); // 파일 경로 와 파일
-																	// 이름 및 확장자
-																	// 대입
+		fileName = fileSave.getDirectory() + fileSave.getFile(); // 파일경로와 파일이름 및 확장자 대입
 		System.out.println(fileName);
 
 		// 파일입출력을 위해 강제적 예외 처리
@@ -251,12 +244,12 @@ public class FileLocker extends JFrame {
 	} // saveFile
 
 	public static Key getKey() throws Exception { // DES 키값 획득
-
-		System.out.println("DES KEY ACCESS");
+		
 		DESKeySpec desKeySpec = new DESKeySpec(keyValue.getBytes()); // keyValue 바이트화하여 DESKeySpec에 저장
 		SecretKeyFactory keyFactory = SecretKeyFactory.getInstance("DES"); // DESKeySpec을 DES 형식의 키값으로 구현
-
-		return keyFactory.generateSecret(desKeySpec); // 키값으로 구현된 DESKeySpec 리턴
+		System.out.println("DES KEY ACCESS");
+		
+		return keyFactory.generateSecret(desKeySpec); // DESKeySpec key에 저장
 	} // getKey
 
 	// lock 메뉴아이템 이벤트
@@ -265,9 +258,9 @@ public class FileLocker extends JFrame {
 		// 예외 처리
 		try {
 
-			Cipher desCipher = Cipher.getInstance("DES"); // DES형 변환을 구현하는 Cipher 객체 생성
+			Cipher desCipher = Cipher.getInstance("DES/ECB/PKCS5Padding"); // DES형 변환을 구현하는 Cipher 객체 생성
 			Encoder encoder = Base64.getEncoder(); // Base64 인코더 객체 생성
-			
+
 			// Cipher 객체 암호화 모드로 initialize getkey()를 이용해 DES 키값 대입
 			desCipher.init(Cipher.ENCRYPT_MODE, getKey()); 
 
@@ -291,8 +284,7 @@ public class FileLocker extends JFrame {
 		// 예외 처리
 		try {
 
-			Cipher desCipher = Cipher.getInstance("DES"); // DES형 변환을 구현하는
-															// Cipher 객체 생성
+			Cipher desCipher = Cipher.getInstance("DES/ECB/PKCS5Padding"); // DES형 변환을 구현하는 Cipher 객체 생성
 			Decoder decoder = Base64.getDecoder(); // Base64 디코더 객체 생성
 
 			// Cipher 객체 복호화 모드로 initialize getkey()를 이용해 DES 키값 대입
@@ -317,7 +309,7 @@ public class FileLocker extends JFrame {
 		System.exit(0); // 프레임 창 종료
 	} // exit
 
-	public static void main(String[] args) throws InterruptedException {
+	public static void main(String[] args) throws Exception {
 
 		new FileLocker();
 	} // main
