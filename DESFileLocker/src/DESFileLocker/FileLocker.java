@@ -4,6 +4,7 @@ import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
 import javax.swing.border.EtchedBorder;
+import javax.swing.filechooser.FileNameExtensionFilter;
 
 import com.thehowtotutorial.splashscreen.JSplash;
 import java.net.URL;
@@ -12,6 +13,7 @@ import java.io.*;
 import java.util.Base64;
 import java.util.Base64.Encoder;
 import java.util.Base64.Decoder;
+import java.util.StringTokenizer;
 
 import java.security.Key;
 import javax.crypto.Cipher;
@@ -189,70 +191,95 @@ public class FileLocker extends JFrame {
 
 		int answer = JOptionPane.showConfirmDialog(this, "Are you sure?", "TEXT CLEAR", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
 		
-		if (answer == 0) {			// 확인 리턴
+		if (answer == JOptionPane.YES_OPTION) {			// 확인 리턴
 			
 			textArea.setText(""); // 텍스트 영역 초기화
-			JOptionPane.showMessageDialog(this, "TEXT Clear", "CLEAR", JOptionPane.INFORMATION_MESSAGE);
-		}
+			
+			JOptionPane.showMessageDialog(this, "TEXT Cleared", "CLEAR", JOptionPane.INFORMATION_MESSAGE);
+		} // if
 	} // newFile
 
 	// open 메뉴아이템 메소드
 	public void openFile() {
-
-		// 파일을 불러 들이는 객체 생성
-		FileDialog fileOpen = new FileDialog(frame, "파일열기", FileDialog.LOAD);
-		fileOpen.setVisible(true); // 파일입출력 다이얼로그 생성
-		fileName = fileOpen.getDirectory() + fileOpen.getFile(); // 파일경로와 파일이름 및 확장자 대입
-		System.out.println(fileName);
-
-		// 파일입출력을 위해 강제적 예외 처리
-		try {
-
-			int ch = 0;
-
-			fr = new FileReader(fileName);
-			br = new BufferedReader(fr);
-			sw = new StringWriter();
-
-			while ((ch = br.read()) != -1) {
-
-				sw.write(ch);
-			} // while
-
-			br.close(); // 버퍼 닫기
-			textArea.setText(sw.toString()); // 텍스트 영역에 파일 내용 쓰기
-
-		} catch (IOException e) { // 입출력 예외 처리
-
-			e.printStackTrace();
+		
+		JFileChooser fileOpenChooser = new JFileChooser();
+		FileNameExtensionFilter txtFilter = new FileNameExtensionFilter("TXT 파일 | *.txt","txt");
+		fileOpenChooser.setDialogTitle("파일 열기");
+		fileOpenChooser.setFileFilter(txtFilter);
+		
+		if  (fileOpenChooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {		// 사용자가 파일을 선택하고 "열기" 버튼을 누른 경우
 			
-			JOptionPane.showMessageDialog(this, "File Input Error!", "ERROR", JOptionPane.ERROR_MESSAGE);
-		} // try
+			String filePath = fileOpenChooser.getSelectedFile().getPath();
+			
+			// 파일입출력을 위해 강제적 예외 처리
+			try {
+
+				int ch = 0;
+
+				fr = new FileReader(filePath);
+				br = new BufferedReader(fr);
+				sw = new StringWriter();
+
+				while ((ch = br.read()) != -1) {
+
+					sw.write(ch);
+				} // while
+
+				br.close(); // 버퍼 닫기
+				textArea.setText(sw.toString()); // 텍스트 영역에 파일 내용 쓰기
+
+			} catch (IOException e) { // 입출력 예외 처리
+
+				e.printStackTrace();
+				
+				JOptionPane.showMessageDialog(this, "File Input Error!", "ERROR", JOptionPane.ERROR_MESSAGE);
+			} // try
+		} // if
 	} // openFile
 
 	// save 메뉴아이템 메소드
-	public void saveFile() {
+	public void saveFile() { 
+		
+		JFileChooser fileSaveChooser = new JFileChooser();
+		
 
-		// 파일을 저장하는 객체 생성
-		FileDialog fileSave = new FileDialog(frame, "파일저장", FileDialog.SAVE); // 파일입출력 다이얼로그 생성
-		fileSave.setVisible(true);
-		fileName = fileSave.getDirectory() + fileSave.getFile(); // 파일경로와 파일이름 및 확장자 대입
-		System.out.println(fileName);
+		FileNameExtensionFilter txtFilter = new FileNameExtensionFilter("TXT 파일 | *.txt","txt");
+		fileSaveChooser.setFileFilter(txtFilter);
+		fileSaveChooser.setDialogTitle("파일 저장");
+		
+		 
+		
+		if  (fileSaveChooser.showSaveDialog(this) == JFileChooser.APPROVE_OPTION) {		// 사용자가 파일을 선택하고 "저장" 버튼을 누른 경우
 
-		// 파일입출력을 위해 강제적 예외 처리
-		try {
-
-			fw = new FileWriter(fileName);
-			bw = new BufferedWriter(fw);
-			bw.write(textArea.getText()); // 파일 저장하기
-			bw.close(); // 버퍼 닫기
-
-		} catch (IOException ie) { // 입출력 예외 처리
-
-			ie.printStackTrace();
+			File selectedFile = new File(fileSaveChooser.getSelectedFile() + ".txt"); 
 			
-			JOptionPane.showMessageDialog(this, "File Output Error!", "ERROR", JOptionPane.ERROR_MESSAGE);
-		} // try
+			if (selectedFile.exists() == true) {
+				
+				int answer = JOptionPane.showConfirmDialog(this, "The file aleady exists. OverWrite?","WARNING",
+	            		JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
+				
+				if (answer != JOptionPane.YES_OPTION)
+					return;
+				
+				else {
+					
+					// 파일입출력을 위해 강제적 예외 처리
+						try {
+			
+							fw = new FileWriter(selectedFile);
+							bw = new BufferedWriter(fw);
+							bw.write(textArea.getText().replaceAll("\n", "\r\n"));
+							bw.close();
+							
+						} catch (IOException ie) { // 입출력 예외 처리
+				
+							ie.printStackTrace();
+							
+							JOptionPane.showMessageDialog(this, "File Output Error!", "ERROR", JOptionPane.ERROR_MESSAGE);
+						} // try
+					}
+			}
+		}
 	} // saveFile
 
 	//Key 구현 메소드
@@ -298,10 +325,11 @@ public class FileLocker extends JFrame {
 	// unlock 메뉴아이템 메소드
 	public void unlockFile() {
 
+		// textArea 유효 검증
 		if (textArea == null || textArea.getText().length() == 0) {
 			
-			JOptionPane.showMessageDialog(this, "TEXT does not exist!", "ERROR", JOptionPane.ERROR_MESSAGE);
-		}
+			JOptionPane.showMessageDialog(this, "TEXT does not Exist!", "ERROR", JOptionPane.ERROR_MESSAGE);
+		} // if
 		
 		else {
 		// 예외 처리
