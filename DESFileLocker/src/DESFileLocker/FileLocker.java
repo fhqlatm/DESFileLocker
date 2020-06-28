@@ -24,7 +24,7 @@ import javax.crypto.spec.DESKeySpec;
 
 public class FileLocker extends JFrame {
 
-	static String keyValue = "24_key_password_password"; // 암호로 제시될 24byte 키값
+	static String keyValue = "1111111111222222222233333333333"; // 암호로 제시될 24byte 키값
 
 	JFrame frame; // 프레임 생성
 	JTextArea textArea; // 텍스트 영역
@@ -63,11 +63,10 @@ public class FileLocker extends JFrame {
 		
 		panel.setLayout(new BorderLayout());
 		panel.setBorder(BorderFactory.createEmptyBorder(10 , 10 , 10 , 10));
+		panel.setBackground(Color.lightGray);
 		
 		panel.add(titleLabel, BorderLayout.NORTH);
 		panel.add(textArea, BorderLayout.CENTER);
-		
-		panel.setBackground(Color.lightGray);
 		
 		getContentPane().add(panel); // 텍스트 영역을 프레임에 추가
 
@@ -78,12 +77,16 @@ public class FileLocker extends JFrame {
 		setVisible(true);
 	}
 
+	// 프로그램 구동 디자인 JSplash.jar 이용
+	// https://m.blog.naver.com/ndb796/220621281539
 	public void loadMainImage() throws InterruptedException {
 
 		URL mainImageURL = FileLocker.class.getClassLoader().getResource("main.jpg");
+		
+		// main.jpg 를 대입한 JSplash 객체 생성
 		JSplash splash = new JSplash(mainImageURL, true, true, false, "V1", null, Color.RED, Color.BLACK);
 
-		int sleepDelay = 10;
+		int sleepDelay = 500;
 
 		splash.splashOn();
 
@@ -97,7 +100,7 @@ public class FileLocker extends JFrame {
 		Thread.sleep(sleepDelay);
 
 		splash.splashOff();
-	}
+	} //loadMainImage
 
 	public void createMenu() {
 
@@ -141,6 +144,7 @@ public class FileLocker extends JFrame {
 		JMenuItem menuUnLockItem = new JMenuItem("UnLock_DES");
 		menuUnLockItem.addActionListener(listener);
 		menuUnLock.add(menuUnLockItem);
+		
 
 		// EXIT메뉴의 메뉴아이템 객체 생성, 메뉴아이템을 메뉴에 추가
 		JMenuItem menuExitItem = new JMenuItem("Exit");
@@ -253,15 +257,8 @@ public class FileLocker extends JFrame {
 	public static Key getKey() throws Exception { // DES 키값 획득
 
 		System.out.println("DES KEY ACCESS");
-		DESKeySpec desKeySpec = new DESKeySpec(keyValue.getBytes()); // keyValue
-																		// 바이트화하여
-																		// DESKeySpec에
-																		// 저장
-		SecretKeyFactory keyFactory = SecretKeyFactory.getInstance("DES"); // DESKeySpec을
-																			// DES
-																			// 형식의
-																			// 키값으로
-																			// 구현
+		DESKeySpec desKeySpec = new DESKeySpec(keyValue.getBytes()); // keyValue 바이트화하여 DESKeySpec에 저장
+		SecretKeyFactory keyFactory = SecretKeyFactory.getInstance("DES"); // DESKeySpec을 DES 형식의 키값으로 구현
 
 		return keyFactory.generateSecret(desKeySpec); // 키값으로 구현된 DESKeySpec 리턴
 	} // getKey
@@ -272,24 +269,16 @@ public class FileLocker extends JFrame {
 		// 예외 처리
 		try {
 
-			Cipher desCipher = Cipher.getInstance("DES"); // DES형 변환을 구현하는
-															// Cipher 객체 생성
+			Cipher desCipher = Cipher.getInstance("DES"); // DES형 변환을 구현하는 Cipher 객체 생성
 			Encoder encoder = Base64.getEncoder(); // Base64 인코더 객체 생성
-
-			desCipher.init(Cipher.ENCRYPT_MODE, getKey()); // Cipher 객체 암호화 모드로
-															// initialize
-															// getkey()를 이용해 DES
-															// 키값 대입
+			
+			// Cipher 객체 암호화 모드로 initialize getkey()를 이용해 DES 키값 대입
+			desCipher.init(Cipher.ENCRYPT_MODE, getKey()); 
 
 			byte[] text = textArea.getText().getBytes(); // textArea 텍스트 바이트화
-			byte[] textEncrypted = desCipher.doFinal(text); // byte형식 text를 DES
-															// 암호화
+			byte[] textEncrypted = desCipher.doFinal(text); // byte형식 text를 DES 암호화
 
-			String s = new String(encoder.encode(textEncrypted)); // 암호화된 바이트
-																	// 형식의
-																	// textEncrypted
-																	// string
-																	// 인코딩
+			String s = new String(encoder.encode(textEncrypted)); // 암호화된 바이트 형식의 textEncrypted 인코딩
 
 			System.out.println(s);
 			textArea.setText(s);
@@ -310,18 +299,11 @@ public class FileLocker extends JFrame {
 															// Cipher 객체 생성
 			Decoder decoder = Base64.getDecoder(); // Base64 디코더 객체 생성
 
-			desCipher.init(Cipher.DECRYPT_MODE, getKey()); // Cipher 객체 복호화 모드로
-															// initialize
-															// getkey()를 이용해 DES
-															// 키값 대입
+			// Cipher 객체 복호화 모드로 initialize getkey()를 이용해 DES 키값 대입
+			desCipher.init(Cipher.DECRYPT_MODE, getKey());
 
-			byte[] text = decoder.decode(textArea.getText().getBytes()); // textArea
-																			// 텍스트
-																			// 바이트화
-																			// 하여
-																			// 디코딩
-			byte[] textDecrypted = desCipher.doFinal(text); // 디코딩 된 text를 DES
-															// 복호화
+			byte[] text = decoder.decode(textArea.getText().getBytes()); // textArea 텍스트를  바이트화하여 디코딩
+			byte[] textDecrypted = desCipher.doFinal(text); // 디코딩 된 text를 DES 복호화
 
 			String s = new String(textDecrypted); // 복호화된 바이트 형식의 textDecrypted
 
