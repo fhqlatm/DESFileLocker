@@ -24,15 +24,15 @@ public class FileLocker extends JFrame {
 
 	static String keyValue = "password"; // 패스워드 8자리 필수!!
 
-	JFrame frame; // 프레임 생성
+	JFrame frame; 		// 프레임 생성
 	JTextArea textArea; // 텍스트 영역
-	String fileName; // 파일 이름
+	String fileName; 	// 파일 이름
 
-	FileReader fr; // 파일 읽기
-	BufferedReader br; // 파일 입력 효율성
-	StringWriter sw; // 파일 내용
-	FileWriter fw; // 파일 쓰기
-	BufferedWriter bw; // 파일 출력 효율성
+	FileReader fr; 		// 파일 읽기
+	BufferedReader br; 	// 파일 입력 효율성
+	StringWriter sw; 	// 파일 내용
+	FileWriter fw; 		// 파일 쓰기
+	BufferedWriter bw; 	// 파일 출력 효율성
 
 	// FileLcoker 생성자
 	FileLocker() throws Exception {
@@ -72,19 +72,19 @@ public class FileLocker extends JFrame {
 
 		setTitle("FILE LOCKER");
 		setSize(650, 450);
-		setLocationRelativeTo(null); // 프레임이 모니터 가운데에 설정
-		setDefaultCloseOperation(EXIT_ON_CLOSE); // 프레임의 정상적 종료 처리
+		setLocationRelativeTo(null); 					// 프레임이 모니터 가운데에 설정
+		setDefaultCloseOperation(EXIT_ON_CLOSE); 		// 프레임의 정상적 종료 처리
 		setVisible(true);
 	}
 
-	// 프로그램 구동 디자인 JSplash.jar 이용
+	// 프로그램 구동 디자인아트 JSplash.jar 이용
 	// https://m.blog.naver.com/ndb796/220621281539
 	public void loadMainImage() throws InterruptedException {
 
 		URL mainImageURL = FileLocker.class.getClassLoader().getResource("main.jpg");
 		
 		// main.jpg 를 대입한 JSplash 객체 생성
-		JSplash splash = new JSplash(mainImageURL, true, true, false, "V1", null, Color.RED, Color.BLACK);
+		JSplash splash = new JSplash(mainImageURL, true, true, false, "Version 1.0.0", null, Color.RED, Color.BLACK);
 
 		int sleepDelay = 500;
 
@@ -189,11 +189,12 @@ public class FileLocker extends JFrame {
 	// new 메뉴아이템 메소드
 	public void newFile() {
 
+		// 자바 다이얼로그 JOptionPane 이용
 		int answer = JOptionPane.showConfirmDialog(this, "Are you sure?", "TEXT CLEAR", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
 		
-		if (answer == JOptionPane.YES_OPTION) {			// 확인 리턴
+		if (answer == JOptionPane.YES_OPTION) {		// TextClear 확인
 			
-			textArea.setText(""); // 텍스트 영역 초기화
+			textArea.setText(""); 	// 텍스트 영역 초기화
 			
 			JOptionPane.showMessageDialog(this, "TEXT Cleared", "CLEAR", JOptionPane.INFORMATION_MESSAGE);
 		} // if
@@ -209,7 +210,7 @@ public class FileLocker extends JFrame {
 		
 		if  (fileOpenChooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {		// 사용자가 파일을 선택하고 "열기" 버튼을 누른 경우
 			
-			String filePath = fileOpenChooser.getSelectedFile().getPath();
+			String filePath = fileOpenChooser.getSelectedFile().getPath();				// 선택 파일 경로 구현
 			
 			// 파일입출력을 위해 강제적 예외 처리
 			try {
@@ -225,10 +226,10 @@ public class FileLocker extends JFrame {
 					sw.write(ch);
 				} // while
 
-				br.close(); // 버퍼 닫기
-				textArea.setText(sw.toString()); // 텍스트 영역에 파일 내용 쓰기
+				br.close();
+				textArea.setText(sw.toString()); 	// 텍스트 영역에 파일 내용 쓰기
 
-			} catch (IOException e) { // 입출력 예외 처리
+			} catch (IOException e) { 	// 입출력 예외 처리
 
 				e.printStackTrace();
 				
@@ -241,55 +242,54 @@ public class FileLocker extends JFrame {
 	public void saveFile() { 
 		
 		JFileChooser fileSaveChooser = new JFileChooser();
-		
-
 		FileNameExtensionFilter txtFilter = new FileNameExtensionFilter("TXT 파일 | *.txt","txt");
+		
 		fileSaveChooser.setFileFilter(txtFilter);
 		fileSaveChooser.setDialogTitle("파일 저장");
 		
-		 
-		
 		if  (fileSaveChooser.showSaveDialog(this) == JFileChooser.APPROVE_OPTION) {		// 사용자가 파일을 선택하고 "저장" 버튼을 누른 경우
 
-			File selectedFile = new File(fileSaveChooser.getSelectedFile() + ".txt"); 
+			File selectedFile = new File(fileSaveChooser.getSelectedFile() + ".txt"); 	// 선택 파일 .txt 구현
 			
-			if (selectedFile.exists() == true) {
+			if (selectedFile.exists() == true) {										// selectedFile 이 이미 있는 경우
 				
 				int answer = JOptionPane.showConfirmDialog(this, "The file aleady exists. OverWrite?","WARNING",
 	            		JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
 				
-				if (answer != JOptionPane.YES_OPTION)
+				if (answer != JOptionPane.YES_OPTION) {			// OverWrite X
+
 					return;
+				} // if
 				
-				else {
+				else {			// OverWrite 확인 후
 					
 					// 파일입출력을 위해 강제적 예외 처리
-						try {
+					try {
+		
+						fw = new FileWriter(selectedFile);
+						bw = new BufferedWriter(fw);
+						bw.write(textArea.getText().replaceAll("\n", "\r\n"));
+						bw.close();
+						
+					} catch (IOException ie) { 		// 입출력 예외 처리
 			
-							fw = new FileWriter(selectedFile);
-							bw = new BufferedWriter(fw);
-							bw.write(textArea.getText().replaceAll("\n", "\r\n"));
-							bw.close();
-							
-						} catch (IOException ie) { // 입출력 예외 처리
-				
-							ie.printStackTrace();
-							
-							JOptionPane.showMessageDialog(this, "File Output Error!", "ERROR", JOptionPane.ERROR_MESSAGE);
-						} // try
-					}
-			}
-		}
+						ie.printStackTrace();
+						
+						JOptionPane.showMessageDialog(this, "File Output Error!", "ERROR", JOptionPane.ERROR_MESSAGE);
+					} // try
+				} // else
+			} // if
+		} // if
 	} // saveFile
 
 	//Key 구현 메소드
-	public static Key getKey() throws Exception { // DES 키값 획득
+	public static Key getKey() throws Exception { 								// DES 키값 획득
 		
-		DESKeySpec desKeySpec = new DESKeySpec(keyValue.getBytes()); // keyValue 바이트화하여 DESKeySpec에 저장
-		SecretKeyFactory keyFactory = SecretKeyFactory.getInstance("DES"); // DESKeySpec을 DES 형식의 키값으로 구현
+		DESKeySpec desKeySpec = new DESKeySpec(keyValue.getBytes()); 			// keyValue 바이트화하여 DESKeySpec에 저장
+		SecretKeyFactory keyFactory = SecretKeyFactory.getInstance("DES"); 		// DESKeySpec을 DES 형식의 키값으로 구현
 		System.out.println("DES KEY ACCESS");
 		
-		return keyFactory.generateSecret(desKeySpec); // DESKeySpec key에 저장
+		return keyFactory.generateSecret(desKeySpec); 							// DESKeySpec key에 저장
 	} // getKey
 
 	// lock 메뉴아이템 메소드
@@ -298,23 +298,23 @@ public class FileLocker extends JFrame {
 		// 예외 처리
 		try {
 
-			Cipher desCipher = Cipher.getInstance("DES/ECB/PKCS5Padding"); // DES형 변환을 구현하는 Cipher 객체 생성
-			Encoder encoder = Base64.getEncoder(); // Base64 인코더 객체 생성
+			Cipher desCipher = Cipher.getInstance("DES/ECB/PKCS5Padding"); 		// DES형 변환을 구현하는 Cipher 객체 생성
+			Encoder encoder = Base64.getEncoder(); 								// Base64 인코더 객체 생성
 
 			// Cipher 객체 암호화 모드로 initialize getkey()를 이용해 DES 키값 대입
 			desCipher.init(Cipher.ENCRYPT_MODE, getKey()); 
 
-			byte[] text = textArea.getText().getBytes(); // textArea 텍스트 바이트화
-			byte[] textEncrypted = desCipher.doFinal(text); // byte형식 text를 DES 암호화
+			byte[] text = textArea.getText().getBytes(); 						// textArea 텍스트 바이트화
+			byte[] textEncrypted = desCipher.doFinal(text); 					// byte형식 text를 DES 암호화
 
-			String s = new String(encoder.encode(textEncrypted)); // 암호화된 바이트 형식의 textEncrypted 인코딩
+			String s = new String(encoder.encode(textEncrypted)); 				// 암호화된 바이트 형식의 textEncrypted 인코딩
 
 			System.out.println(s);
 			textArea.setText(s);
 			
 			JOptionPane.showMessageDialog(this, "File LOCK Success", "SUCCESS", JOptionPane.INFORMATION_MESSAGE);
 
-		} catch (Exception e) { // 모든 예외 처리
+		} catch (Exception e) { 	// 모든 예외 처리
 
 			System.out.println("Exception");
 			
@@ -332,26 +332,25 @@ public class FileLocker extends JFrame {
 		} // if
 		
 		else {
-		// 예외 처리
 			try {
 
-				Cipher desCipher = Cipher.getInstance("DES/ECB/PKCS5Padding"); // DES형 변환을 구현하는 Cipher 객체 생성
-				Decoder decoder = Base64.getDecoder(); // Base64 디코더 객체 생성
+				Cipher desCipher = Cipher.getInstance("DES/ECB/PKCS5Padding"); 	// DES형 변환을 구현하는 Cipher 객체 생성
+				Decoder decoder = Base64.getDecoder();	 						// Base64 디코더 객체 생성
 	
 				// Cipher 객체 복호화 모드로 initialize getkey()를 이용해 DES 키값 대입
 				desCipher.init(Cipher.DECRYPT_MODE, getKey());
 	
-				byte[] text = decoder.decode(textArea.getText().getBytes()); // textArea 텍스트를  바이트화하여 디코딩
-				byte[] textDecrypted = desCipher.doFinal(text); // 디코딩 된 text를 DES 복호화
+				byte[] text = decoder.decode(textArea.getText().getBytes()); 	// textArea 텍스트를  바이트화하여 디코딩
+				byte[] textDecrypted = desCipher.doFinal(text);					// 디코딩 된 text를 DES 복호화
 	
-				String s = new String(textDecrypted); // 복호화된 바이트 형식의 textDecrypted
+				String s = new String(textDecrypted); 							// 복호화된 바이트 형식의 textDecrypted
 	
 				System.out.println(s);
 				textArea.setText(s);
 	
 				JOptionPane.showMessageDialog(this, "File UNLOCK Success", "SUCCESS", JOptionPane.INFORMATION_MESSAGE);
 	
-			} catch (Exception e) { // 모든 예외 처리
+			} catch (Exception e) { 	// 모든 예외 처리
 	
 				System.out.println("Exception");
 				
@@ -363,12 +362,13 @@ public class FileLocker extends JFrame {
 	// exit 메뉴아이템 메소드
 	public void exit() {
 
-		int answer = JOptionPane.showConfirmDialog(this, "Are you sure?", "TEXT CLEAR", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
+		int answer = JOptionPane.showConfirmDialog(this, "Are you sure?", "EXIT",
+				JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
 		
-		if (answer == 0) {			// 확인 리턴
+		if (answer == JOptionPane.YES_OPTION) {		// EXIT
 			
-			System.exit(0); // 프레임 창 종료// 텍스트 영역 초기화
-		}
+			System.exit(0); 						//종료
+		} // if
 	} // exit
 
 	public static void main(String[] args) throws Exception {
