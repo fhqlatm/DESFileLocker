@@ -20,17 +20,17 @@ import javax.crypto.spec.DESKeySpec;
 
 public class FileLocker extends JFrame {
 
-	static String keyValue = "password"; //패스워드 8자리 필수!!
+	static String keyValue = "password"; // 패스워드 8자리 필수!!
 
 	JFrame frame; // 프레임 생성
 	JTextArea textArea; // 텍스트 영역
 	String fileName; // 파일 이름
 
 	FileReader fr; // 파일 읽기
-	BufferedReader br; // 파일 읽는 것을 효율적으로 높이기 위함
+	BufferedReader br; // 파일 입력 효율성
 	StringWriter sw; // 파일 내용
 	FileWriter fw; // 파일 쓰기
-	BufferedWriter bw; // 파일 쓰는 것을 효율적으로 높이기 위함
+	BufferedWriter bw; // 파일 출력 효율성
 
 	// FileLcoker 생성자
 	FileLocker() throws Exception {
@@ -46,27 +46,27 @@ public class FileLocker extends JFrame {
 		
 		JPanel panel = new JPanel();
 		JLabel titleLabel = new JLabel();
-		EtchedBorder eBorder = new EtchedBorder(EtchedBorder.RAISED);		//EtchedBorder로 텍스트 필드 디자인 추가
+		EtchedBorder eBorder = new EtchedBorder(EtchedBorder.RAISED);		// EtchedBorder로 텍스트 필드 디자인 추가
 		
 		titleLabel.setBorder(eBorder);
 		titleLabel.setText("TEXT Field");
 		titleLabel.setHorizontalAlignment(JLabel.CENTER);
-		titleLabel.setOpaque(true);										//background 활성화
-		titleLabel.setBackground(Color.darkGray);						//배경 색상
-		titleLabel.setForeground(Color.WHITE);							//폰트 색상
-		titleLabel.setFont(new Font("SansSerif",Font.BOLD, 17));		//setFont로 텍스트 필드 디자인 추가
+		titleLabel.setOpaque(true);										// BackGround 활성화
+		titleLabel.setBackground(Color.darkGray);						// 배경 색상
+		titleLabel.setForeground(Color.WHITE);							// 폰트 색상
+		titleLabel.setFont(new Font("SansSerif",Font.BOLD, 17));		// setFont로 텍스트 필드 디자인 추가
 		
 		textArea.setBorder(eBorder);
 		textArea.setFont(new Font("",Font.BOLD, 17));
 		
 		panel.setLayout(new BorderLayout());
-		panel.setBorder(BorderFactory.createEmptyBorder(10 , 10 , 10 , 10));
+		panel.setBorder(BorderFactory.createEmptyBorder(10 , 10 , 10 , 10));	// 마진 추가
 		panel.setBackground(Color.lightGray);
 		
 		panel.add(titleLabel, BorderLayout.NORTH);
 		panel.add(textArea, BorderLayout.CENTER);
 		
-		getContentPane().add(panel); // 텍스트 영역을 프레임에 추가
+		getContentPane().add(panel);
 
 		setTitle("FILE LOCKER");
 		setSize(650, 450);
@@ -98,7 +98,7 @@ public class FileLocker extends JFrame {
 		Thread.sleep(sleepDelay);
 
 		splash.splashOff();
-	} //loadMainImage
+	} // loadMainImage
 
 	public void createMenu() {
 
@@ -134,12 +134,12 @@ public class FileLocker extends JFrame {
 		} // for
 
 		// LOCK메뉴의 메뉴아이템 객체 생성, 메뉴아이템을 메뉴에 추가
-		JMenuItem menuLockItem = new JMenuItem("Lock_DES");
+		JMenuItem menuLockItem = new JMenuItem("DES Lock");
 		menuLockItem.addActionListener(listener);
 		menuLock.add(menuLockItem);
 
 		// UNLOCK메뉴의 메뉴아이템 객체 생성, 메뉴아이템을 메뉴에 추가
-		JMenuItem menuUnLockItem = new JMenuItem("UnLock_DES");
+		JMenuItem menuUnLockItem = new JMenuItem("DES UnLock");
 		menuUnLockItem.addActionListener(listener);
 		menuUnLock.add(menuUnLockItem);
 		
@@ -169,11 +169,11 @@ public class FileLocker extends JFrame {
 				saveFile();
 				break;
 
-			case "Lock_DES":
+			case "DES Lock":
 				lockFile();
 				break;
 
-			case "UnLock_DES":
+			case "DES UnLock":
 				unlockFile();
 				break;
 
@@ -184,18 +184,23 @@ public class FileLocker extends JFrame {
 		} // actionPerformed
 	} // MenuActionListener
 
-	// new 메뉴아이템 이벤트
+	// new 메뉴아이템 메소드
 	public void newFile() {
 
-		textArea.setText(""); // 텍스트 영역의 백지화
+		int answer = JOptionPane.showConfirmDialog(this, "Are you sure?", "TEXT CLEAR", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
+		
+		if (answer == 0) {			// 확인 리턴
+			
+			textArea.setText(""); // 텍스트 영역 초기화
+			JOptionPane.showMessageDialog(this, "TEXT Clear", "CLEAR", JOptionPane.INFORMATION_MESSAGE);
+		}
 	} // newFile
 
-	// open 메뉴아이템 이벤트
+	// open 메뉴아이템 메소드
 	public void openFile() {
 
 		// 파일을 불러 들이는 객체 생성
 		FileDialog fileOpen = new FileDialog(frame, "파일열기", FileDialog.LOAD);
-		fileOpen.setLocationRelativeTo(null);
 		fileOpen.setVisible(true); // 파일입출력 다이얼로그 생성
 		fileName = fileOpen.getDirectory() + fileOpen.getFile(); // 파일경로와 파일이름 및 확장자 대입
 		System.out.println(fileName);
@@ -219,11 +224,13 @@ public class FileLocker extends JFrame {
 
 		} catch (IOException e) { // 입출력 예외 처리
 
-			e.printStackTrace(); // 리턴값 X, 가장 자세한 예외결과 제시
+			e.printStackTrace();
+			
+			JOptionPane.showMessageDialog(this, "File Input Error!", "ERROR", JOptionPane.ERROR_MESSAGE);
 		} // try
 	} // openFile
 
-	// save 메뉴아이템 이벤트
+	// save 메뉴아이템 메소드
 	public void saveFile() {
 
 		// 파일을 저장하는 객체 생성
@@ -242,10 +249,13 @@ public class FileLocker extends JFrame {
 
 		} catch (IOException ie) { // 입출력 예외 처리
 
-			ie.printStackTrace(); // 리턴값 X, 가장 자세한 예외결과 제시
+			ie.printStackTrace();
+			
+			JOptionPane.showMessageDialog(this, "File Output Error!", "ERROR", JOptionPane.ERROR_MESSAGE);
 		} // try
 	} // saveFile
 
+	//Key 구현 메소드
 	public static Key getKey() throws Exception { // DES 키값 획득
 		
 		DESKeySpec desKeySpec = new DESKeySpec(keyValue.getBytes()); // keyValue 바이트화하여 DESKeySpec에 저장
@@ -255,7 +265,7 @@ public class FileLocker extends JFrame {
 		return keyFactory.generateSecret(desKeySpec); // DESKeySpec key에 저장
 	} // getKey
 
-	// lock 메뉴아이템 이벤트
+	// lock 메뉴아이템 메소드
 	public void lockFile() {
 
 		// 예외 처리
@@ -274,42 +284,63 @@ public class FileLocker extends JFrame {
 
 			System.out.println(s);
 			textArea.setText(s);
+			
+			JOptionPane.showMessageDialog(this, "File LOCK Success", "SUCCESS", JOptionPane.INFORMATION_MESSAGE);
 
 		} catch (Exception e) { // 모든 예외 처리
 
-			System.out.println("Exception"); // 예외 발생시 "Exception"출력
+			System.out.println("Exception");
+			
+			JOptionPane.showMessageDialog(this, "Not Access!", "ERROR", JOptionPane.ERROR_MESSAGE);
 		} // try
 	} // lockFile
 
-	// unlock 메뉴아이템 이벤트
+	// unlock 메뉴아이템 메소드
 	public void unlockFile() {
 
+		if (textArea == null || textArea.getText().length() == 0) {
+			
+			JOptionPane.showMessageDialog(this, "TEXT does not exist!", "ERROR", JOptionPane.ERROR_MESSAGE);
+		}
+		
+		else {
 		// 예외 처리
-		try {
+			try {
 
-			Cipher desCipher = Cipher.getInstance("DES/ECB/PKCS5Padding"); // DES형 변환을 구현하는 Cipher 객체 생성
-			Decoder decoder = Base64.getDecoder(); // Base64 디코더 객체 생성
-
-			// Cipher 객체 복호화 모드로 initialize getkey()를 이용해 DES 키값 대입
-			desCipher.init(Cipher.DECRYPT_MODE, getKey());
-
-			byte[] text = decoder.decode(textArea.getText().getBytes()); // textArea 텍스트를  바이트화하여 디코딩
-			byte[] textDecrypted = desCipher.doFinal(text); // 디코딩 된 text를 DES 복호화
-
-			String s = new String(textDecrypted); // 복호화된 바이트 형식의 textDecrypted
-
-			System.out.println(s);
-			textArea.setText(s);
-
-		} catch (Exception e) { // 모든 예외 처리
-
-			System.out.println("Exception"); // 예외 발생시 "Exception"출력
-		} // try
+				Cipher desCipher = Cipher.getInstance("DES/ECB/PKCS5Padding"); // DES형 변환을 구현하는 Cipher 객체 생성
+				Decoder decoder = Base64.getDecoder(); // Base64 디코더 객체 생성
+	
+				// Cipher 객체 복호화 모드로 initialize getkey()를 이용해 DES 키값 대입
+				desCipher.init(Cipher.DECRYPT_MODE, getKey());
+	
+				byte[] text = decoder.decode(textArea.getText().getBytes()); // textArea 텍스트를  바이트화하여 디코딩
+				byte[] textDecrypted = desCipher.doFinal(text); // 디코딩 된 text를 DES 복호화
+	
+				String s = new String(textDecrypted); // 복호화된 바이트 형식의 textDecrypted
+	
+				System.out.println(s);
+				textArea.setText(s);
+	
+				JOptionPane.showMessageDialog(this, "File UNLOCK Success", "SUCCESS", JOptionPane.INFORMATION_MESSAGE);
+	
+			} catch (Exception e) { // 모든 예외 처리
+	
+				System.out.println("Exception");
+				
+				JOptionPane.showMessageDialog(this, "Not Access!", "ERROR", JOptionPane.ERROR_MESSAGE);
+			} // try
+		}// else
 	} // unLockFile
 
-	// exit 메뉴아이템 이벤트
+	// exit 메뉴아이템 메소드
 	public void exit() {
-		System.exit(0); // 프레임 창 종료
+
+		int answer = JOptionPane.showConfirmDialog(this, "Are you sure?", "TEXT CLEAR", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
+		
+		if (answer == 0) {			// 확인 리턴
+			
+			System.exit(0); // 프레임 창 종료// 텍스트 영역 초기화
+		}
 	} // exit
 
 	public static void main(String[] args) throws Exception {
