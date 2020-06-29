@@ -210,7 +210,7 @@ public class FileLocker extends JFrame {
 		
 		if  (fileOpenChooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {		// 사용자가 파일을 선택하고 "열기" 버튼을 누른 경우
 			
-			String filePath = fileOpenChooser.getSelectedFile().getPath();				// 선택 파일 경로 구현
+			String filePath = fileOpenChooser.getSelectedFile().getPath();				// 선택 파일 경로 저장
 			
 			// 파일입출력을 위해 강제적 예외 처리
 			try {
@@ -244,41 +244,45 @@ public class FileLocker extends JFrame {
 		JFileChooser fileSaveChooser = new JFileChooser();
 		FileNameExtensionFilter txtFilter = new FileNameExtensionFilter("TXT 파일 | *.txt","txt");
 		
+		File selectedFile = null;
+		int overWrite = 0;
+		
 		fileSaveChooser.setFileFilter(txtFilter);
 		fileSaveChooser.setDialogTitle("파일 저장");
 		
 		if  (fileSaveChooser.showSaveDialog(this) == JFileChooser.APPROVE_OPTION) {		// 사용자가 파일을 선택하고 "저장" 버튼을 누른 경우
 
-			File selectedFile = new File(fileSaveChooser.getSelectedFile() + ".txt"); 	// 선택 파일 .txt 구현
+			selectedFile = new File(fileSaveChooser.getSelectedFile() + ".txt"); 		// 선택 파일 경로 이름 .txt 저장
 			
 			if (selectedFile.exists() == true) {										// selectedFile 이 이미 있는 경우
 				
-				int answer = JOptionPane.showConfirmDialog(this, "The file aleady exists. OverWrite?","WARNING",
+				// overWrite 판별
+				overWrite = JOptionPane.showConfirmDialog(this, "The file aleady Exists. OverWrite?","WARNING",
 	            		JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
-				
-				if (answer != JOptionPane.YES_OPTION) {			// OverWrite X
-
-					return;
-				} // if
-				
-				else {			// OverWrite 확인 후
-					
-					// 파일입출력을 위해 강제적 예외 처리
-					try {
-		
-						fw = new FileWriter(selectedFile);
-						bw = new BufferedWriter(fw);
-						bw.write(textArea.getText().replaceAll("\n", "\r\n"));
-						bw.close();
-						
-					} catch (IOException ie) { 		// 입출력 예외 처리
-			
-						ie.printStackTrace();
-						
-						JOptionPane.showMessageDialog(this, "File Output Error!", "ERROR", JOptionPane.ERROR_MESSAGE);
-					} // try
-				} // else
 			} // if
+			
+			else {			// selectedFile 없는 경우
+				
+				overWrite = JOptionPane.YES_OPTION;	
+			} //else
+		} // if
+		
+		if (overWrite == JOptionPane.YES_OPTION) {
+			
+			// 파일입출력을 위해 강제적 예외 처리
+			try {
+				
+				fw = new FileWriter(selectedFile);
+				bw = new BufferedWriter(fw);
+				bw.write(textArea.getText().replaceAll("\n", "\r\n"));
+				bw.close();
+				
+			} catch (IOException ie) { 		// 입출력 예외 처리
+	
+				ie.printStackTrace();
+				
+				JOptionPane.showMessageDialog(this, "File Output Error!", "ERROR", JOptionPane.ERROR_MESSAGE);
+			} // try
 		} // if
 	} // saveFile
 
