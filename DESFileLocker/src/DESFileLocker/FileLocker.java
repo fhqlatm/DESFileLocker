@@ -130,6 +130,7 @@ public class FileLocker extends JFrame {
 		String[] menuFileItemTitles = { "New", "Open", "Save" };
 
 		for (int i = 0; i < menuFileItem.length; i++) {
+			
 			menuFileItem[i] = new JMenuItem(menuFileItemTitles[i]);
 			menuFileItem[i].addActionListener(listener);
 			menuFile.add(menuFileItem[i]);
