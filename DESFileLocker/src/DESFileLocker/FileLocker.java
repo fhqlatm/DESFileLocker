@@ -22,7 +22,7 @@ import javax.crypto.spec.DESKeySpec;
 
 public class FileLocker extends JFrame {
 
-	static String keyValue = "password"; // 패스워드 8자리 필수!!
+	static String keyValue = "password"; // 패스워드
 
 	JFrame frame; 		// 프레임 생성
 	JTextArea textArea; // 텍스트 영역
